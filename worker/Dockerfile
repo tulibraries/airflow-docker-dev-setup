@@ -4,9 +4,10 @@ FROM puckel/docker-airflow:1.10.4
 
 # Install git
 USER root
+RUN mkdir -p /usr/share/man/man1
 RUN apt-get update -y && \
-  apt-get install -y git libssl-dev libreadline-dev jq
-
+  apt-get install -y git libssl-dev libreadline-dev jq default-jre
+RUN pip install awscli
 
 # Install rbenv and ruby for airflow user.
 USER airflow
@@ -17,8 +18,8 @@ ENV PATH ${AIRFLOW_USER_HOME}/.rbenv/shims:${AIRFLOW_USER_HOME}/.rbenv/bin:$PATH
 ENV RBENV_SHELL=bash
 ENV CONFIGURE_OPTS --disable-install-doc
 
-RUN rbenv install 2.6.4
-ENV RBENV_VERSION 2.6.4
+RUN rbenv install 2.6.5
+ENV RBENV_VERSION 2.6.5
 RUN gem install bundler
 
 # start airflow worker
