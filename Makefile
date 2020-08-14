@@ -40,6 +40,13 @@ load-vars:
 	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_S3 --conn_type AWS --conn_login "blah" --conn_password "blerg"
 	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_SSH_INSTANCE --conn_type ssh --conn_host 192.168.10.22 --conn_login vagrant --conn_password vagrant --conn_port 22 --conn_extra '{"no_host_key_check": "true"}'
 	docker exec infra_webserver_1 airflow connections -a --conn_id manifold-db --conn_type ssh --conn_host host.docker.internal --conn_login vagrant --conn_password vagrant --conn_port 2223 --conn_extra '{"key_file": "/usr/local/airflow/.ssh/private_key", "no_host_key_check": "true"}'
+	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_TUPSFTP --conn_type ssh --conn_host sftp.tul-infra.page --conn_login tupsftp --conn_password '$(TUPSFTP_PASSWORD)' --conn_port 9229 --conn_extra '{"no_host_key_check": "true"}'
+	docker exec infra_webserver_1 airflow connections -a --conn_id tupsftp  --conn_type ssh --conn_host sftp.tul-infra.page --conn_login tupsftp --conn_password '$(TUPSFTP_PASSWORD)' --conn_port 9229  --conn_extra '{"no_host_key_check": "true"}'
+	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_TUPRESS --conn_type ssh --conn_host 173.255.195.105 --conn_login conan_the_deployer --conn_port 9229 --conn_extra '{"key_file": "/usr/local/airflow/.ssh/conan_the_deployer" "no_host_key_check": true}'
+	docker exec infra_webserver_1 airflow connections -a --conn_id tupress --conn_type ssh --conn_host 173.255.195.105 --conn_login conan_the_deployer --conn_port 9229 --conn_extra '{"key_file": "/usr/local/airflow/.ssh/conan_the_deployer", "no_host_key_check": true}'
+	docker-compose -p infra exec worker mkdir -m 700 .ssh
+	docker cp $(WORKER_SSH_KEY_PATH) infra_worker_1:/usr/local/airflow/.ssh/conan_the_deployer
+
 
 setup-manifold-ssh:
 	@echo "Setting up airflow to ssh to a local manifold Vagrant instance on port 2222"
