@@ -39,6 +39,8 @@ load-vars:
 	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_INSTANCE --conn_uri http://127.0.0.1:8010
 	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_S3 --conn_type AWS --conn_login "blah" --conn_password "blerg"
 	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_SSH_INSTANCE --conn_type ssh --conn_host 192.168.10.22 --conn_login vagrant --conn_password vagrant --conn_port 22 --conn_extra '{"no_host_key_check": "true"}'
+	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_1_SSH_INSTANCE --conn_type ssh --conn_host 192.168.10.21 --conn_login vagrant --conn_password vagrant --conn_port 22 --conn_extra '{"no_host_key_check": "true"}'
+	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_2_SSH_INSTANCE --conn_type ssh --conn_host 192.168.10.22 --conn_login vagrant --conn_password vagrant --conn_port 22 --conn_extra '{"no_host_key_check": "true"}'
 	docker exec infra_webserver_1 airflow connections -a --conn_id manifold-db --conn_type ssh --conn_host host.docker.internal --conn_login vagrant --conn_password vagrant --conn_port 2223 --conn_extra '{"key_file": "/usr/local/airflow/.ssh/private_key", "no_host_key_check": "true"}'
 
 setup-manifold-ssh:
