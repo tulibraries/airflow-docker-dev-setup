@@ -19,6 +19,14 @@ In the root of you dags repository, run `git submodule add git@github.com:tulibr
 
 Next, in the root of your dags repository, create a file called `local.env`. Add the line `DAG_DIR=my_dag_dir` with the actual name of the directory in the root of the repo containing your dag files. If your dags do any python import statements, this directory name needs to match the top level package in those import statements.
 
+Finally, you should ensure that you have set the following environment varibles, `TUPSFTP_PASSWORD`, `WORKER_SSH_KEY_PATH`, `TUP_ACCOUNT_NAME`, `TUP_SSH_KEY_PATH`, and `TUP_SFTP_ACCOUNT_NAME`. For example:
+
+    export TUPSFTP_PASSWORD="REINDEER FLOTILLA"
+    export WORKER_SSH_KEY_PATH="/home/flynn/.ssh/id_rsa"
+    export TUP_ACCOUNT_NAME="flynn_the_deployer"
+    export TUP_SSH_KEY_PATH="/usr/local/airflow/.ssh/flynn_the_deployer"
+    export TUP_SFTP_ACCOUNT_NAME="flynnsplace"
+
 ## Usage
 
 To use the docker setup, `cd` into the `docker` directory. This contains the `docker-compose.yml` and some other docker configurations, a `docker-requirement.txt` for pypi packages you want installed on the container, and a Makefile defining some useful commands.
