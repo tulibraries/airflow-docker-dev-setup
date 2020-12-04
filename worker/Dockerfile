@@ -18,8 +18,8 @@ ENV PATH ${AIRFLOW_USER_HOME}/.rbenv/shims:${AIRFLOW_USER_HOME}/.rbenv/bin:$PATH
 ENV RBENV_SHELL=bash
 ENV CONFIGURE_OPTS --disable-install-doc
 
-RUN rbenv install 2.6.5
-ENV RBENV_VERSION 2.6.5
+RUN rbenv install 2.7.2
+ENV RBENV_VERSION 2.7.2
 RUN gem install bundler
 
 # start airflow worker
