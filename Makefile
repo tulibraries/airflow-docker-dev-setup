@@ -20,6 +20,16 @@ down: stop
 	@echo "Killing airflow containers, networks, volumes"
 	docker-compose -p 'infra' rm -fv
 
+lint:
+	@echo "Linting files in ./dags folder (mounted volume)"
+	if [ ! -d "dags/cob_datapipeline" ]; then pipenv run pylint cob_datapipeline -E; fi
+	if [ ! -d "dags/manifold_airflow_dags" ]; then pipenv run pylint manifold_airflow_dags -E; fi
+	if [ ! -d "dags/funcake_dags" ]; then pipenv run pylint funcake_dags -E; fi
+	.circleci/pylint
+
+test:
+	pipenv run pytest
+
 clone-dags:
 	@echo "Cloning DAGs into ./dags folder (mounted volume)"
 	if [ ! -d "dags/cob_datapipeline" ]; then git clone https://github.com/tulibraries/cob_datapipeline.git dags/cob_datapipeline; fi
