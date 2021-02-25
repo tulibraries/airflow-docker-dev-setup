@@ -15,17 +15,11 @@ This repo expects:
 
 ## Setup
 
-In the root of you dags repository, run `git submodule add git@github.com:tulibraries/airflow-docker-dev-setup docker`, and then commit the changes to .gitmodules and the new `docker` directory that has just been created.
+If you are starting from an existing DAG, see [Setup from Existing DAG Git Repo](#FromGitModule) below.
+
+First, in the root of you dags repository, run `git submodule add git@github.com:tulibraries/airflow-docker-dev-setup docker`, and then commit the changes to .gitmodules and the new `docker` directory that has just been created.
 
 Next, in the root of your dags repository, create a file called `local.env`. Add the line `DAG_DIR=my_dag_dir` with the actual name of the directory in the root of the repo containing your dag files. If your dags do any python import statements, this directory name needs to match the top level package in those import statements.
-
-Finally, you should ensure that you have set the following environment varibles, `TUPSFTP_PASSWORD`, `WORKER_SSH_KEY_PATH`, `TUP_ACCOUNT_NAME`, `TUP_SSH_KEY_PATH`, and `TUP_SFTP_ACCOUNT_NAME`. For example:
-
-    export TUPSFTP_PASSWORD="REINDEER FLOTILLA"
-    export WORKER_SSH_KEY_PATH="/home/flynn/.ssh/id_rsa"
-    export TUP_ACCOUNT_NAME="flynn_the_deployer"
-    export TUP_SSH_KEY_PATH="/usr/local/airflow/.ssh/flynn_the_deployer"
-    export TUP_SFTP_ACCOUNT_NAME="flynnsplace"
 
 ## Usage
 
@@ -45,9 +39,39 @@ Give this up to 1 minute to start up. You can check the Airflow web-server healt
 $ docker-compose -p infra ps
 ```
 
-#### Reload Docker Instances
+### Common Problem: "Variable import failed"
 
-If you change something in the docker setup, e.g. an airflow worker build step, you may want to restart the docker instances (restarts, does not destroy and rebuild):
+During `make up` you may encounter several erros similar to:
+
+```
+   Variable import failed: ProgrammingError('(psycopg2.ProgrammingError) relation "variable" does not exist...
+```
+
+You may need to extend the build target's sleep time in `airflow-docker-dev-setup/Makefile` to 120 seconds to allow the MySQL container more time to start up before continuing on to subsequent commands.
+
+Edit `airflow-docker-dev-setup/Makefile`, search for the `build` target and edit the `sleep` command's time from `40` to `120`.
+
+```
+build:
+       @echo "Building airflow containers, networks, volumes"
+       docker-compose pull
+       docker-compose -p 'infra' up --build -d
+       sleep 40 # <== Change from 40 to 120
+       @echo "airflow running on http://127.0.0.1:8010"
+```
+
+### <<a id="FromGitModule"></a>Setup From Existing DAG Git Repo
+
+If you clone your DAG from a Git repository, you will need create and update this Git Submodule from your DAG's root directory:
+
+```
+	git submodule init
+	git submodule update
+```
+
+### Reload Docker Instances
+
+If you change anything in the docker setup, e.g. an airflow worker build step, you may need to restart the docker instances (restarts will not destroy and rebuild the Docker containers and images):
 
 ```
 $ make reload
@@ -69,19 +93,19 @@ This will stop but not delete the Airflow docker stack, for ease of restart if y
 
 #### Start Bash in Given Docker Instance
 
-Run shell in Airflow Worker instance:
+Run command shell in Airflow Worker instance:
 
 ```
  $ make tty-worker
 ```
 
-Run shell in Airflow Webserver instance:
+Run command shell in Airflow Webserver instance:
 
 ```
 $ make tty-webserver
 ```
 
-Run shell in Airflow Scheduler instance:
+Run command shell in Airflow Scheduler instance:
 
 ```
 $ make tty-scheduler
@@ -89,21 +113,19 @@ $ make tty-scheduler
 
 ### Start Bash as Root in Given Docker Instance
 
-Run shell as root in Airflow Worker instance:
+Run command shell as root in Airflow Worker instance:
 
 ```
 $ make tty-root-worker
 ```
 
-Run shell as root in Airflow Webserver instance:
+Run command shell as root in Airflow Webserver instance:
 
 ```
 $ make tty-root-webserver
 ```
-Run shell as root in Airflow Scheduler instance:
+Run command shell as root in Airflow Scheduler instance:
 
 ```
 $ make tty-root-scheduler
 ```
-
-
