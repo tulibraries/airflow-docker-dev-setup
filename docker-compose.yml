@@ -11,32 +11,36 @@ services:
         - POSTGRES_DB=airflow
 
   webserver:
-    image: puckel/docker-airflow:1.10.4
+    image: apache/airflow:1.10.14
     restart: always
     depends_on:
         - postgres
     environment:
         - LOAD_EX=n
         - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     env_file:
         - ../local.env
     volumes:
-        - ../${DAG_DIR}:/usr/local/airflow/dags/${DAG_DIR}
-        - ./data:/usr/local/airflow/data
+        - ../${DAG_DIR}/${DAG_DIR}:/opt/airflow/dags/${DAG_DIR}
+        - ./data:/opt/airflow/data
         - ./docker-requirements.txt:/requirements.txt
+        - ./bin/start.sh:/usr/bin/start.sh
+
     ports:
         - "8010:8080"
-    command: webserver
+
+    entrypoint: /usr/bin/start.sh
     healthcheck:
-        test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-        interval: 30s
-        timeout: 30s
+        test: ["CMD-SHELL", "[ -f /opt/airflow/airflow-webserver.pid ]"]
+        interval: 10s
+        timeout: 20s
         retries: 3
 
   flower:
-    image: puckel/docker-airflow:1.10.4
+    image: apache/airflow:1.10.14
     restart: always
     depends_on:
         - redis
@@ -44,28 +48,30 @@ services:
     environment:
         - LOAD_EX=n
         - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     ports:
         - "5555:5555"
-    command: flower
+    command: celery flower
     volumes:
         - ./docker-requirements.txt:/requirements.txt
 
   scheduler:
-    image: puckel/docker-airflow:1.10.4
+    image: apache/airflow:1.10.14
     restart: always
     depends_on:
         - webserver
     volumes:
-        - ../${DAG_DIR}:/usr/local/airflow/dags/${DAG_DIR}
-        - ./data:/usr/local/airflow/data
+        - ../${DAG_DIR}/${DAG_DIR}:/opt/airflow/dags/${DAG_DIR}
+        - ./data:/opt/airflow/data
         - ./docker-requirements.txt:/requirements.txt
     env_file:
         - ../local.env
     environment:
         - LOAD_EX=n
         - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     command: scheduler
@@ -78,8 +84,8 @@ services:
     depends_on:
         - scheduler
     volumes:
-        - ../${DAG_DIR}:/usr/local/airflow/dags/${DAG_DIR}
-        - ./data:/usr/local/airflow/data
+        - ../${DAG_DIR}/${DAG_DIR}:/opt/airflow/dags/${DAG_DIR}
+        - ./data:/opt/airflow/data
         - ./docker-requirements.txt:/requirements.txt
     env_file:
         - ../local.env
@@ -88,4 +94,4 @@ services:
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - GITHUB_TOKEN=${GITHUB_TOKEN}
-    command: worker
+    command: celery worker
