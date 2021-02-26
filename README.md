@@ -61,6 +61,19 @@ git add .gitsubmodules docker
 
 In the root of your dags repository, create a file called `local.env`. add the line `DAG_DIR=my_dag_dir` with the actual name of the directory in the root of the repo containing your dag files. Following the example directory tree, the line would be: `DAG_DIR=example_dags` If your dags python code has mport statements, this DAG directory name must match the top level package in those import statements
 
+
+### <a id="FromGitModule"></a>Setup From Existing DAG Git Repository
+
+If you cloned your DAG from a Git repository and it already has the `airflow-docker-dev-setup` Git submodule, you will need to perform the following commands to complete the dev container installation process.  From your DAG's root directory:
+
+```
+	git submodule init
+	git submodule update
+```
+
+Then change directories to the docker dev environment `cd docker`
+
+
 ## Usage
 
 To run Airflow in within a containerized dev environment, go into the `docker` directory: `cd docker `. This directory contains the `docker-compose.yml`, docker configurationss, and a `docker-requirement.txt` for pypi packages you want installed on the container, and a Makefile defining some useful commands.
@@ -71,7 +84,7 @@ $ make up
 
 ```
 
-This spins up an Airflow stack using Postgres for the metadata database; Celery, Redis & Flower for job management; CeleryExecutor, Scheduler, Web-Server and Worker Airflow services; and mounting the local `dags` directory as the Airflow stack's DAGs directory. That DAGs directory has cob_datapipeline and manifold_airflow_dags cloned into it if these subdirectories do not already exist. This will also create some known Variables and Connections, based off of `data/example-variables.json` (the task copies this into `data/variables.json` if that file doesn't exist, then loads variables into Airflow from there).
+This spins up an Airflow stack using PostgreSQL for the metadata database; Celery, Redis & Flower for job management; CeleryExecutor, Scheduler, Web-Server and Worker Airflow services; and mounting the local `dags` directory as the Airflow stack's DAGs directory. That DAGs directory has cob_datapipeline and manifold_airflow_dags cloned into it if these subdirectories do not already exist. This will also create some known Variables and Connections, based off of `data/example-variables.json` (the task copies this into `data/variables.json` if that file doesn't exist, then loads variables into Airflow from there).
 
 Give this up to 1 minute to start up. You can check the Airflow web-server health-check state by running:
 
@@ -79,35 +92,7 @@ Give this up to 1 minute to start up. You can check the Airflow web-server healt
 $ docker-compose -p infra ps
 ```
 
-### Common Problem: "Variable import failed"
-
-During `make up` you may encounter several erros similar to:
-
-```
-   Variable import failed: ProgrammingError('(psycopg2.ProgrammingError) relation "variable" does not exist...
-```
-
-You may need to extend the build target's sleep time in `airflow-docker-dev-setup/Makefile` to 120 seconds to allow the MySQL container more time to start up before continuing on to subsequent commands.
-
-Edit `airflow-docker-dev-setup/Makefile`, search for the `build` target and edit the `sleep` command's time from `40` to `120`.
-
-```
-build:
-       @echo "Building airflow containers, networks, volumes"
-       docker-compose pull
-       docker-compose -p 'infra' up --build -d
-       sleep 40 # <== Change from 40 to 120
-       @echo "airflow running on http://127.0.0.1:8010"
-```
-
-### <a id="FromGitModule"></a>Setup From Existing DAG Git Repository
-
-If you cloneed your DAG from a Git repository, you will need create and update this Git Submodule from your DAG's root directory:
-
-```
-	git submodule init
-	git submodule update
-```
+**NOTE** You may encounter a `Variale Import Failed` error which will prevent the proper startup of all the Docker containers.  This is a common problem.  See [Variable Import Failed](#VariableImportFailed) below and re-run `make up`
 
 ### Reload Docker Instances
 
@@ -169,3 +154,22 @@ Run command shell as root in Airflow Scheduler instance:
 ```
 $ make tty-root-scheduler
 ```
+## <a id="VariableImportFailed"></a>Common Problem: "Variable Import Failed"
+
+During `make up` you may encounter several erros similar to:
+
+```
+   Variable import failed: ProgrammingError('(psycopg2.ProgrammingError) relation "variable" does not exist...
+```
+
+Extend the build target's sleep time in `airflow-docker-dev-setup/Makefile` to allow the database container more time to start up before continuing on to subsequent commands.  Edit `airflow-docker-dev-setup/Makefile`, search for the `build` target and edit the `sleep` command's time from `40` to `120`.
+
+```
+build:
+       @echo "Building airflow containers, networks, volumes"
+       docker-compose pull
+       docker-compose -p 'infra' up --build -d
+       sleep 120
+       @echo "airflow running on http://127.0.0.1:8010"
+```
+
