@@ -1,82 +1,37 @@
 # Shared Docker Development Setup for Airflow DAGs
 
 
-This Git repository contains all of the setup needed to run airflow in docker, mount your local DAG repo into the containers that need it, and allow you to develop DAGs hopefully quickly!
-
-
-## Expected Setup
-
-This repo expects:
-
-* To be a Git submodule residing in the root of your DAG's Git repoitory. 
-* The DAG project directory structure:
-```
-example_airflow_dags/
-├── Makefile
-├── Pipfile
-├── Pipfile.lock
-├── README.md
-├── docker
-│   ├── Makefile
-│   ├── README.md
-│   ├── bin
-│   │   └── start.sh
-│   ├── data
-│   │   └── ...
-│   ├── docker-compose.yml
-│   ├── docker-requirements.txt
-│   ├── example-variables.json
-│   └── worker
-│       └── dockerfile
-├── local.env
-├── example_dags
-│   ├── example_dag_1.py
-│   ├── example_dag_2.py
-│   └── ...
-├── tests
-│   ├── conftest.py
-│   ├── example_dag_1_test.py
-│   ├── example_dag_2_test.py
-│   └── ...
-└── variables.json
-```
-* The `local.env` file contains the line `DAG_DIR=some_name` with the name of the directory containing your DAG files.
+The `airflow_docker_dev_setup` project provides a means to facilitate local DAG development in a containerized Docker environment.
 
 
 ## Setup
 
-Note: If you are starting from an existing DAG with this Git repository already contained in the `gitmodules` file, see [Setup from Existing DAG Git Repository](#FromGitModule) below instead.
+To use this tool, refer to existing DAG projects that use the `airflow_docker_dev_setup` project:
 
-Add this Git repository as a Git submodule to the root of the DAG you are developing.
+- [COB Data Pipeline](https://github.com/tulibraries/cob_datapipeline/)
+- [Funcake DAGS](https://github.com/tulibraries/funcake_dags)
+- [Manifold AirflOW DAGs](https://github.com/tulibraries/manifold_airflow_dags/)
 
-```
-git submodule add git@github.com:tulibraries/airflow-docker-dev-setup docker
-```
+Three specifics to note:
 
-Cmmit the changes to .gitmodules and the new `docker` directory that has just been created.
-
-```
-git add .gitsubmodules docker
-```
-
-In the root of your dags repository, create a file called `local.env`. add the line `DAG_DIR=my_dag_dir` with the actual name of the directory in the root of the repo containing your dag files. Following the example directory tree, the line would be: `DAG_DIR=example_dags` If your dags python code has mport statements, this DAG directory name must match the top level package in those import statements
-
-
-### <a id="FromGitModule"></a>Setup From Existing DAG Git Repository
-
-If you cloned your DAG from a Git repository and it already has the `airflow-docker-dev-setup` Git submodule, you will need to perform the following commands to complete the dev container installation process.  From your DAG's root directory:
+- Add this Git repository as a submodule to the root of the DAG you are developing.
 
 ```
-	git submodule init
-	git submodule update
+git submodule add git@github.com:tulibraries/airflow-docker-dev-setup
 ```
 
-Then change directories to the docker dev environment `cd docker`
+- Commit newly created `.gitmodules` file and `airflow-docker-dev-setup` directory. 
+
+```
+git add .gitmodules airflow-docker-dev-setup
+```
+
+- Create a file called `local.env`. add the line `DAG_DIR=my_dag_dir` with the actual name of the directory in the root of the repo containing your dag files.
 
 
 ## Usage
 
-To run Airflow in within a containerized dev environment, go into the `docker` directory: `cd docker `. This directory contains the `docker-compose.yml`, docker configurationss, and a `docker-requirement.txt` for pypi packages you want installed on the container, and a Makefile defining some useful commands.
+The `airflow_docker_dev_setup` submodleu uses the UNIX `make` command to control Docker containers. To run Airflow in within a containerized dev environment, execute the `make` commands with the targets shown below. 
 
 ```
 
@@ -114,7 +69,16 @@ This will stop but not delete the Airflow docker stack, for ease of restart if y
  $ make down
 ```
 
-#### Start Bash in Given Docker Instance
+#### Load Airflow Variables
+
+```
+  $ make load-vars
+```
+
+Load the airflow variables, in `variables.json`
+
+
+#### Start Bash in a Given Docker Instance
 
 Run command shell in Airflow Worker instance:
 
@@ -134,7 +98,7 @@ Run command shell in Airflow Scheduler instance:
 $ make tty-scheduler
 ```
 
-### Start Bash as Root in Given Docker Instance
+### Start Bash as Root in a Given Docker Instance
 
 Run command shell as root in Airflow Worker instance:
 
