@@ -116,3 +116,29 @@ Run command shell as root in Airflow Scheduler instance:
 ```
 $ make tty-root-scheduler
 ```
+
+### Development commands
+
+Lint files (check for python language errors) in ./dags folder (mounted volume):
+
+```
+$ make lint
+```
+
+Run tests for airflow DAGs
+
+```
+$ make test
+```
+
+Clone DAGs into ./dags folder (mounted volume):
+
+```
+$ make clone-dags
+```
+
+Load Variables & Connections DAGs into Airflow:
+
+```
+$ make load-vars:
+```
