@@ -16,12 +16,13 @@ services:
     depends_on:
         - postgres
     environment:
-        - LOAD_EX=n
-        - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__LOAD_EXAMPLES=False
+        - AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS=False
         - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-        - AIRFLOW__CELERY__RESULT__BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
     env_file:
         - ../local.env
     volumes:
@@ -47,11 +48,12 @@ services:
         - redis
         - webserver
     environment:
-        - LOAD_EX=n
-        - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__LOAD_EXAMPLES=False
         - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
     ports:
         - "5555:5555"
     command: celery flower
@@ -70,12 +72,12 @@ services:
     env_file:
         - ../local.env
     environment:
-        - LOAD_EX=n
-        - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__LOAD_EXAMPLES=False
         - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-        - AIRFLOW__CELERY__RESULT__BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
     command: scheduler
 
   worker:
@@ -92,10 +94,10 @@ services:
     env_file:
         - ../local.env
     environment:
-        - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - GITHUB_TOKEN=${GITHUB_TOKEN}
-        - AIRFLOW__CELERY__RESULT__BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow  
-
+        - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
     command: celery worker
