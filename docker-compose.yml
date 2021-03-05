@@ -91,6 +91,7 @@ services:
         - ../${DAG_DIR}/${DAG_DIR}:/opt/airflow/dags/${DAG_DIR}
         - ./data:/opt/airflow/data
         - ./docker-requirements.txt:/requirements.txt
+        - ./worker/.bashrc:/opt/airflow/.bashrc
     env_file:
         - ../local.env
     environment:
