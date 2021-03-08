@@ -23,6 +23,7 @@ services:
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
+        - LOAD_EX=n
     env_file:
         - ../local.env
     volumes:
@@ -54,6 +55,7 @@ services:
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
+        - LOAD_EX=n
     ports:
         - "5555:5555"
     command: celery flower
@@ -78,6 +80,7 @@ services:
         - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
+        - LOAD_EX=n
     command: scheduler
 
   worker:
@@ -101,4 +104,5 @@ services:
         - GITHUB_TOKEN=${GITHUB_TOKEN}
         - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
+        - LOAD_EX=n
     command: celery worker

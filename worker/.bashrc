@@ -1,5 +1,5 @@
-if [ -d "$HOME/.rbenv" ]; then
-  export PATH=$HOME/.rbenv/bin:$PATH;
-  export RBENV_ROOT=$HOME/.rbenv;
-  eval "$(rbenv init -)";
-fi
+export PATH=/home/airflow/.rbenv/bin:$PATH
+export RBENV_ROOT=/home/airflow/.rbenv
+eval "$(rbenv init -)"
+echo $HOME
+export HOME=/home/airflow
