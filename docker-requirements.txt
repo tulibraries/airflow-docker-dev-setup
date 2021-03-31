@@ -1,5 +1,5 @@
 setuptools
-lxml==4.6.2
+lxml==4.6.3
 tulflow==0.8.0
 awscli
 Cython==0.28.2
