@@ -38,6 +38,7 @@
     "WEB_CONTENT_BASIC_AUTH_USER": "blah",
     "WEB_CONTENT_BRANCH": "main",
     "WEB_CONTENT_CORE": "tul_cob-web-0",
+    "WEB_CONTENT_READ_TIMEOUT": 180,
     "WEB_CONTENT_SCHEDULE_INTERVAL": "@daily",
     "WEB_CONTENT_SOLR_CONFIG": {"configset": "tul_cob-web-2", "replication_factor": 2},
     "VILLANOVA_OAI_CONFIG": {"endpoint": "http://digital.library.villanova.edu/OAI/Server", "included_sets": ["dpla"], "md_prefix": "oai_dc"},
