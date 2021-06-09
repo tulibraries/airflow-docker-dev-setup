@@ -6,7 +6,7 @@ Cython==0.28.2
 Flask==1.0.4
 GitPython==2.1.9
 pexpect
-pip==19.0.3
+pip==19.2
 pipenv
 sickle
 xmltodict
