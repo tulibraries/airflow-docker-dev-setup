@@ -1,6 +1,6 @@
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
-FROM apache/airflow:1.10.14
+FROM apache/airflow:2.3.0
 
 # Install git
 USER root
@@ -24,7 +24,7 @@ ENV PATH ${AIRFLOW_USER_HOME}/.rbenv/shims:${AIRFLOW_USER_HOME}/.rbenv/bin:${AIR
 ENV RBENV_SHELL=bash
 ENV CONFIGURE_OPTS --disable-install-doc
 
-RUN rbenv install 2.7.2 && rbenv global 2.7.2 && rbenv rehash
+RUN rbenv install 2.7.5 && rbenv global 2.7.5 && rbenv rehash
 
 RUN eval "$(rbenv init -)" &&  gem install bundler
 
