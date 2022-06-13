@@ -8,7 +8,7 @@ This repo contains all of the setup needed to run airflow in docker, mount your 
 
 This repo expects:
 
-* to be a git submodule living in the root of your dags repo. 
+* to be a git submodule living in the root of your dags repo.
 * dag files are in a directory in the top level.
 * a `local.env` file with `DAG_DIR=some_name` with the name of the directory containing your dag files.
 
@@ -37,7 +37,9 @@ $ make up
 
 ```
 
-This spins up an Airflow stack using Postgres for the metadata database; Celery, Redis & Flower for job management; CeleryExecutor, Scheduler, Web-Server and Worker Airflow services; and mounting the local `dags` directory as the Airflow stack's DAGs directory. That DAGs directory has cob_datapipeline and manifold_airflow_dags cloned into it if these subdirectories do not already exist. This will also create some known Variables and Connections, based off of `data/example-variables.json` (the task copies this into `data/variables.json` if that file doesn't exist, then loads variables into Airflow from there).
+This spins up an Airflow stack using Postgres for the metadata database; Celery, Redis & Flower for job management; CeleryExecutor, Scheduler, Web-Server and Worker Airflow services; and mounting the local `dags` directory as the Airflow stack's DAGs directory. That DAGs directory has cob_datapipeline and manifold_airflow_dags cloned into it if these subdirectories do not already exist. This will also create some known Variables and Connections, based off of the `variables.json` file found in the dag repository. (the task copies this into `data/local-dev-variables.json` if that file doesn't exist, then loads variables into Airflow from there).
+
+Airflow 2 requires users to login, so an initial user is created as part of this workflow.  The username is test-user and the password is "password".
 
 Give this up to 1 minute to start up. You can check the Airflow web-server health-check state by running:
 
@@ -105,5 +107,3 @@ Run shell as root in Airflow Scheduler instance:
 ```
 $ make tty-root-scheduler
 ```
-
-

@@ -1,4 +1,4 @@
-up: down build pip-install load-vars
+up: down build pip-install load-vars add-user
 	@echo "Building airflow with mounted DAGs, loaded variables, connections."
 
 build:
@@ -38,27 +38,29 @@ clone-dags:
 
 load-vars:
 	@echo "Loading Variables & Connections DAGs into Airflow"
-	if [ ! -f "data/variables.json" ]; then cp example-variables.json data/variables.json; fi
-	docker exec infra_webserver_1 airflow variables -i /opt/airflow/data/variables.json
-	if [ ! -f "data/local-variables.json" ]; then cp ../variables.json data/local-variables.json; fi
-	docker exec infra_webserver_1 airflow variables -i /opt/airflow/data/local-variables.json
-	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_SLACK_WEBHOOK --conn_type HTTP --conn_host https://hooks.slack.com/services --conn_password blah
-	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_SOLR_LEADER --conn_uri http://solr1:8983
-	docker exec infra_webserver_1 airflow connections -a --conn_id SOLRCLOUD --conn_uri http://solr1:8983
-	docker exec infra_webserver_1 airflow connections -a --conn_id SOLRCLOUD-WRITER --conn_uri http://solr1:8983
-	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_INSTANCE --conn_uri http://127.0.0.1:8010
-	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_S3 --conn_type AWS --conn_login "blah" --conn_password "blerg"
-	docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_MANIFOLD_SSH_INSTANCE --conn_type ssh --conn_host 192.168.10.22 --conn_login vagrant --conn_password vagrant --conn_port 22 --conn_extra '{"no_host_key_check": "true"}'
-	docker exec infra_webserver_1 airflow connections -a --conn_id manifold-db --conn_type ssh --conn_host host.docker.internal --conn_login vagrant --conn_password vagrant --conn_port 2223 --conn_extra '{"key_file": "/opt/airflow/.ssh/private_key", "no_host_key_check": "true"}'
+	# if [ ! -f "data/variables.json" ]; then cp example-variables.json data/variables.json; fi
+	# docker exec infra_webserver_1 airflow variables import /opt/airflow/data/variables.json
+	if [ ! -f "data/local-dev-variables.json" ]; then cp ../variables.json data/local-dev-variables.json; fi
+	docker exec infra_webserver_1 airflow variables import /opt/airflow/data/local-dev-variables.json
+	docker exec infra_webserver_1 airflow connections add AIRFLOW_CONN_SLACK_WEBHOOK --conn-type http --conn-host https://hooks.slack.com/services --conn-password blah
+	docker exec infra_webserver_1 airflow connections add AIRFLOW_CONN_SOLR_LEADER --conn-uri http://solr1:8983
+	docker exec infra_webserver_1 airflow connections add SOLRCLOUD --conn-uri http://solr1:8983
+	docker exec infra_webserver_1 airflow connections add SOLRCLOUD-WRITER --conn-uri http://solr1:8983
+	docker exec infra_webserver_1 airflow connections add AIRFLOW_CONN_MANIFOLD_INSTANCE --conn-uri http://127.0.0.1:8010
+	docker exec infra_webserver_1 airflow connections add AIRFLOW_S3 --conn-type aws --conn-login "blah" --conn-password "blerg"
+	docker exec infra_webserver_1 airflow connections add AIRFLOW_CONN_MANIFOLD_SSH_INSTANCE --conn-type ssh --conn-host 192.168.10.22 --conn-login vagrant --conn-password vagrant --conn-port 22 --conn-extra '{"no_host_key_check": "true"}'
+	docker exec infra_webserver_1 airflow connections add manifold-db --conn-type ssh --conn-host host.docker.internal --conn-login vagrant --conn-password vagrant --conn-port 2223 --conn-extra '{"key_file": "/opt/airflow/.ssh/private_key", "no_host_key_check": "true"}'
 	if [ "$(TUPSFTP_PASSWORD)" != "" ]; then \
-			docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_TUPSFTP --conn_type ssh --conn_host sftp.tul-infra.page --conn_login $(TUP_SFTP_ACCOUNT_NAME) --conn_password '$(TUPSFTP_PASSWORD)' --conn_port 9229 --conn_extra '{"no_host_key_check": "true"}'; \
-			docker exec infra_webserver_1 airflow connections -a --conn_id $(TUP_SFTP_ACCOUNT_NAME) --conn_type ssh --conn_host sftp.tul-infra.page --conn_login tupsftp --conn_password '$(TUPSFTP_PASSWORD)' --conn_port 9229  --conn_extra '{"no_host_key_check": "true"}'; \
-			docker exec infra_webserver_1 airflow connections -a --conn_id AIRFLOW_CONN_TUPRESS --conn_type ssh --conn_host 173.255.195.105 --conn_login $(TUP_ACCOUNT_NAME) --conn_port 9229 --conn_extra '{"key_file": "$(TUP_SSH_KEY_PATH)" "no_host_key_check": true}'; \
-			docker exec infra_webserver_1 airflow connections -a --conn_id tupress --conn_type ssh --conn_host 173.255.195.105 --conn_login $(TUP_ACCOUNT_NAME) --conn_port 9229 --conn_extra '{"key_file": "$(TUP_SSH_KEY_PATH)", "no_host_key_check": true}'; \
+			docker exec infra_webserver_1 airflow connections add AIRFLOW_CONN_TUPSFTP --conn-type ssh --conn-host sftp.tul-infra.page --conn-login $(TUP_SFTP_ACCOUNT_NAME) --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229 --conn-extra '{"no_host_key_check": "true"}'; \
+			docker exec infra_webserver_1 airflow connections add $(TUP_SFTP_ACCOUNT_NAME) --conn-type ssh --conn-host sftp.tul-infra.page --conn-login tupsftp --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229  --conn-extra '{"no_host_key_check": "true"}'; \
+			docker exec infra_webserver_1 airflow connections add AIRFLOW_CONN_TUPRESS --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)" "no_host_key_check": true}'; \
+			docker exec infra_webserver_1 airflow connections add tupress --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)", "no_host_key_check": true}'; \
 			docker-compose -p infra exec worker mkdir -m 700 .ssh; \
 			docker cp $(WORKER_SSH_KEY_PATH) infra_worker_1:/opt/airflow/.ssh/conan_the_deployer; \
 		fi
 
+add-user:
+	docker exec infra_webserver_1 airflow users create -u test-user -f first -l last -e test@test.com -p password -r Admin
 
 setup-manifold-ssh:
 	@echo "Setting up airflow to ssh to a local manifold Vagrant instance on port 2222"
@@ -70,9 +72,9 @@ setup-manifold-ssh:
 		/opt/airflow/.ssh/private_key
 
 pip-install:
-	docker exec infra_worker_1 pip install  --user -r /requirements.txt --constraint=https://raw.githubusercontent.com/apache/airflow/constraints-1-10/constraints-3.6.txt
-	docker exec infra_scheduler_1 pip install  --user -r /requirements.txt --constraint=https://raw.githubusercontent.com/apache/airflow/constraints-1-10/constraints-3.6.txt
-	docker exec infra_webserver_1 pip install  --user -r /requirements.txt --constraint=https://raw.githubusercontent.com/apache/airflow/constraints-1-10/constraints-3.6.txt
+	docker exec infra_worker_1 pip install --user -r /requirements.txt
+	docker exec infra_scheduler_1 pip install --user -r /requirements.txt
+	docker exec infra_webserver_1 pip install --user -r /requirements.txt
 
 tty-worker:
 	docker exec -it infra_worker_1 /bin/bash
