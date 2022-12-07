@@ -1,17 +1,17 @@
-version: '3.4'
+version: '3.9'
 services:
   redis:
     image: redis:latest
 
   postgres:
-    image: postgres:11
+    image: postgres:14
     environment:
         - POSTGRES_USER=airflow
         - POSTGRES_PASSWORD=airflow
         - POSTGRES_DB=airflow
 
   webserver:
-    image: apache/airflow:2.3.0-python3.9
+    image: apache/airflow:2.4.2-python3.9
     restart: always
     depends_on:
         - postgres
@@ -43,7 +43,7 @@ services:
         retries: 3
 
   flower:
-    image: apache/airflow:2.3.0-python3.9
+    image: apache/airflow:2.4.2-python3.9
     restart: always
     depends_on:
         - redis
@@ -63,7 +63,7 @@ services:
         - ./docker-requirements.txt:/requirements.txt
 
   scheduler:
-    image: apache/airflow:2.3.0-python3.9
+    image: apache/airflow:2.4.2-python3.9
     restart: always
     depends_on:
         - webserver
