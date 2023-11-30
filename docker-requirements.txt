@@ -18,4 +18,5 @@ apache-airflow-providers-http
 apache-airflow-providers-sftp
 apache-airflow-providers-ssh
 apache-airflow-providers-amazon
+apache-airflow-providers-celery
 awscli
