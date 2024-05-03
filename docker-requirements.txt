@@ -1,6 +1,6 @@
-apache-airflow==2.8.1
+apache-airflow==2.8.3
 cryptography
-Cython==0.29.28
+Cython
 Flask
 GitPython
 lxml
