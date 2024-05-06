@@ -1,4 +1,4 @@
-up: down build pip-install load-vars add-user
+up: down build load-vars add-user
 	@echo "Building airflow with mounted DAGs, loaded variables, connections."
 
 build:
@@ -70,11 +70,6 @@ setup-manifold-ssh:
 		infra-worker-1:/opt/airflow/.ssh/
 	docker exec -u root infra-worker-1 chown airflow:airflow \
 		/opt/airflow/.ssh/private_key
-
-pip-install:
-	docker exec infra-worker-1 pip install --user -r /requirements.txt
-	docker exec infra-scheduler-1 pip install --user -r /requirements.txt
-	docker exec infra-webserver-1 pip install --user -r /requirements.txt
 
 tty-worker:
 	docker exec -it infra-worker-1 /bin/bash
