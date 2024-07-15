@@ -1,13 +1,13 @@
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
-FROM apache/airflow:2.8.3
+FROM apache/airflow:2.9.0-python3.11
 
 # Install git
 USER root
 RUN apt-get update -y && \
   apt-get install -y git libssl-dev \
   libreadline-dev jq bzip2 \
-  build-essential \
+  build-essential libffi-dev libyaml-dev \
   zlib1g-dev
 
 # Install java for the system.
