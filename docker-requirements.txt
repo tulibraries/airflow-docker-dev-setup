@@ -1,4 +1,4 @@
-apache-airflow==2.9.3
+apache-airflow==2.10.0
 cryptography
 Cython
 Flask
