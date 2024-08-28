@@ -3,22 +3,22 @@ up: down build load-vars add-user
 
 build:
 	@echo "Building airflow containers, networks, volumes"
-	docker-compose pull
-	docker-compose -p 'infra' up --build -d
+	docker compose pull
+	docker compose -p 'infra' up --build -d
 	sleep 20
 	@echo "airflow running on http://127.0.0.1:8010"
 
 reload:
 	@echo "Updating solr containers, networks, volumes"
-	docker-compose -p 'infra' restart
+	docker compose -p 'infra' restart
 
 stop:
 	@echo "Stopping airflow containers, networks, volumes"
-	docker-compose -p 'infra' stop
+	docker compose -p 'infra' stop
 
 down: stop
 	@echo "Killing airflow containers, networks, volumes"
-	docker-compose -p 'infra' rm -fv
+	docker compose -p 'infra' rm -fv
 
 lint:
 	@echo "Linting files in ./dags folder (mounted volume)"
@@ -55,7 +55,7 @@ load-vars:
 			docker exec infra-webserver-1 airflow connections add $(TUP_SFTP_ACCOUNT_NAME) --conn-type ssh --conn-host sftp.tul-infra.page --conn-login tupsftp --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229  --conn-extra '{"no_host_key_check": "true"}'; \
 			docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_TUPRESS --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)" "no_host_key_check": true}'; \
 			docker exec infra-webserver-1 airflow connections add tupress --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)", "no_host_key_check": true}'; \
-			docker-compose -p infra exec worker mkdir -m 700 .ssh; \
+			docker compose -p infra exec worker mkdir -m 700 .ssh; \
 			docker cp $(WORKER_SSH_KEY_PATH) infra-worker-1:/opt/airflow/.ssh/conan_the_deployer; \
 		fi
 

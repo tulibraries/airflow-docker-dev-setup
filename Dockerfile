@@ -1,6 +1,6 @@
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
-FROM apache/airflow:2.9.0-python3.11
+FROM apache/airflow:2.9.3-python3.11
 
 # Install git
 USER root
@@ -15,9 +15,16 @@ RUN mkdir -p /usr/share/man/man1
 RUN apt-get update -y
 RUN apt-get install -y default-jre
 
-# Install rbenv and ruby for airflow user.
+COPY docker-requirements.txt /app/requirements.txt
+RUN chown airflow -R /app
+
+#Set Airflow user and Pip install packages
 USER airflow
-ARG AIRFLOW_USER_HOME=/opt/airflow
+RUN export PYTHONPATH=/home/airflow/.local/lib/python3.11/site-packages:$PYTHONPATH
+ENV AIRFLOW_USER_HOME=/opt/airflow
+RUN python3.11 -m pip install --no-cache-dir -r /app/requirements.txt
+
+# Install rbenv and ruby for airflow user.
 RUN git clone https://github.com/rbenv/rbenv.git ${AIRFLOW_USER_HOME}/.rbenv
 RUN git clone https://github.com/rbenv/ruby-build.git ${AIRFLOW_USER_HOME}/.rbenv/plugins/ruby-build
 ENV PATH ${AIRFLOW_USER_HOME}/.rbenv/shims:${AIRFLOW_USER_HOME}/.rbenv/bin:${AIRFLOW_USER_HOME}/.rbenv/plugins/ruby-build/bin:$PATH
