@@ -20,7 +20,6 @@ RUN chown airflow -R /app
 
 #Set Airflow user and Pip install packages
 USER airflow
-RUN export PYTHONPATH=/home/airflow/.local/lib/python3.11/site-packages:$PYTHONPATH
 ENV AIRFLOW_USER_HOME=/opt/airflow
 RUN python3.11 -m pip install --no-cache-dir -r /app/requirements.txt
 
