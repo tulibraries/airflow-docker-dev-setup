@@ -45,6 +45,7 @@ load-vars:
 	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_SLACK_WEBHOOK --conn-type http --conn-host https://hooks.slack.com/services --conn-password blah
 	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_SOLR_LEADER --conn-uri http://solr1:8983
 	docker exec infra-webserver-1 airflow connections add SOLRCLOUD --conn-uri http://solr1:8983
+	docker exec infra-webserver-1 airflow connections add library_website --conn-uri https://library.temple.edu
 	docker exec infra-webserver-1 airflow connections add SOLRCLOUD-WRITER --conn-uri http://solr1:8983
 	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_MANIFOLD_INSTANCE --conn-uri http://127.0.0.1:8010
 	docker exec infra-webserver-1 airflow connections add AIRFLOW_S3 --conn-type aws --conn-login "blah" --conn-password "blerg"
