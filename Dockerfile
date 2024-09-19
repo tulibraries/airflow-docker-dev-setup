@@ -21,7 +21,7 @@ RUN chown airflow -R /app
 #Set Airflow user and Pip install packages
 USER airflow
 ENV AIRFLOW_USER_HOME=/opt/airflow
-RUN python3.11 -m pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install apache-airflow==${AIRFLOW_VERSION} -r /app/requirements.txt
 
 # Install rbenv and ruby for airflow user.
 RUN git clone https://github.com/rbenv/rbenv.git ${AIRFLOW_USER_HOME}/.rbenv
