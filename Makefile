@@ -4,7 +4,7 @@ up: down build load-vars add-user
 build:
 	@echo "Building airflow containers, networks, volumes"
 	docker compose pull
-	docker compose -p 'infra' up --build -d
+	docker compose --progress plain  -p 'infra' up --build -d
 	sleep 20
 	@echo "airflow running on http://127.0.0.1:8010"
 
