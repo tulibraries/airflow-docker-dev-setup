@@ -30,7 +30,7 @@ ENV PATH ${AIRFLOW_USER_HOME}/.rbenv/shims:${AIRFLOW_USER_HOME}/.rbenv/bin:${AIR
 ENV RBENV_SHELL=bash
 ENV CONFIGURE_OPTS --disable-install-doc
 
-RUN rbenv install 3.3.0 && rbenv global 3.3.0 && rbenv rehash
+RUN rbenv install 3.3.0 && rbenv install 3.4.0 && rbenv global 3.3.0 && rbenv rehash
 
 RUN eval "$(rbenv init -)" &&  gem install bundler
 
