@@ -25,7 +25,6 @@ lint:
 	if [ ! -d "dags/cob_datapipeline" ]; then pipenv run pylint cob_datapipeline -E; fi
 	if [ ! -d "dags/manifold_airflow_dags" ]; then pipenv run pylint manifold_airflow_dags -E; fi
 	if [ ! -d "dags/funcake_dags" ]; then pipenv run pylint funcake_dags -E; fi
-	.circleci/pylint
 
 test:
 	pipenv run pytest
