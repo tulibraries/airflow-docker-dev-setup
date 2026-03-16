@@ -1,6 +1,6 @@
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
-FROM apache/airflow:2.10.1-python3.11
+FROM apache/airflow:2.11.2-python3.12
 
 # Install git
 USER root
