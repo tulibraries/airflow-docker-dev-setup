@@ -77,10 +77,10 @@ Run shell in Airflow Worker instance:
  $ make tty-worker
 ```
 
-Run shell in Airflow Webserver instance:
+Run shell in Airflow Api Server instance:
 
 ```
-$ make tty-webserver
+$ make tty-api-server
 ```
 
 Run shell in Airflow Scheduler instance:
@@ -97,10 +97,10 @@ Run shell as root in Airflow Worker instance:
 $ make tty-root-worker
 ```
 
-Run shell as root in Airflow Webserver instance:
+Run shell as root in Airflow Api Server instance:
 
 ```
-$ make tty-root-webserver
+$ make tty-root-api-server
 ```
 Run shell as root in Airflow Scheduler instance:
 
