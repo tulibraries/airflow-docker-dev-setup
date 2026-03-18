@@ -38,29 +38,29 @@ clone-dags:
 load-vars:
 	@echo "Loading Variables & Connections DAGs into Airflow"
 	# if [ ! -f "data/variables.json" ]; then cp example-variables.json data/variables.json; fi
-	# docker exec infra-webserver-1 airflow variables import /opt/airflow/data/variables.json
+	# docker exec infra-api-server-1 airflow variables import /opt/airflow/data/variables.json
 	if [ ! -f "data/local-dev-variables.json" ]; then cp ../variables.json data/local-dev-variables.json; fi
-	docker exec infra-webserver-1 airflow variables import /opt/airflow/data/local-dev-variables.json
-	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_SLACK_WEBHOOK --conn-type http --conn-host https://hooks.slack.com/services --conn-password blah
-	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_SOLR_LEADER --conn-uri http://solr1:8983
-	docker exec infra-webserver-1 airflow connections add SOLRCLOUD --conn-uri http://solr1:8983
-	docker exec infra-webserver-1 airflow connections add library_website --conn-uri https://library.temple.edu
-	docker exec infra-webserver-1 airflow connections add SOLRCLOUD-WRITER --conn-uri http://solr1:8983
-	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_MANIFOLD_INSTANCE --conn-uri http://127.0.0.1:8010
-	docker exec infra-webserver-1 airflow connections add AIRFLOW_S3 --conn-type aws --conn-login "blah" --conn-password "blerg"
-	docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_MANIFOLD_SSH_INSTANCE --conn-type ssh --conn-host 192.168.10.22 --conn-login vagrant --conn-password vagrant --conn-port 22 --conn-extra '{"no_host_key_check": "true"}'
-	docker exec infra-webserver-1 airflow connections add manifold-db --conn-type ssh --conn-host host.docker.internal --conn-login vagrant --conn-password vagrant --conn-port 2223 --conn-extra '{"key_file": "/opt/airflow/.ssh/private_key", "no_host_key_check": "true"}'
+	docker exec infra-api-server-1 airflow variables import /opt/airflow/data/local-dev-variables.json
+	docker exec infra-api-server-1 airflow connections add AIRFLOW_CONN_SLACK_WEBHOOK --conn-type http --conn-host https://hooks.slack.com/services --conn-password blah
+	docker exec infra-api-server-1 airflow connections add AIRFLOW_CONN_SOLR_LEADER --conn-uri http://solr1:8983
+	docker exec infra-api-server-1 airflow connections add SOLRCLOUD --conn-uri http://solr1:8983
+	docker exec infra-api-server-1 airflow connections add library_website --conn-uri https://library.temple.edu
+	docker exec infra-api-server-1 airflow connections add SOLRCLOUD-WRITER --conn-uri http://solr1:8983
+	docker exec infra-api-server-1 airflow connections add AIRFLOW_CONN_MANIFOLD_INSTANCE --conn-uri http://127.0.0.1:8010
+	docker exec infra-api-server-1 airflow connections add AIRFLOW_S3 --conn-type aws --conn-login "blah" --conn-password "blerg"
+	docker exec infra-api-server-1 airflow connections add AIRFLOW_CONN_MANIFOLD_SSH_INSTANCE --conn-type ssh --conn-host 192.168.10.22 --conn-login vagrant --conn-password vagrant --conn-port 22 --conn-extra '{"no_host_key_check": "true"}'
+	docker exec infra-api-server-1 airflow connections add manifold-db --conn-type ssh --conn-host host.docker.internal --conn-login vagrant --conn-password vagrant --conn-port 2223 --conn-extra '{"key_file": "/opt/airflow/.ssh/private_key", "no_host_key_check": "true"}'
 	if [ "$(TUPSFTP_PASSWORD)" != "" ]; then \
-			docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_TUPSFTP --conn-type ssh --conn-host sftp.tul-infra.page --conn-login $(TUP_SFTP_ACCOUNT_NAME) --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229 --conn-extra '{"no_host_key_check": "true"}'; \
-			docker exec infra-webserver-1 airflow connections add $(TUP_SFTP_ACCOUNT_NAME) --conn-type ssh --conn-host sftp.tul-infra.page --conn-login tupsftp --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229  --conn-extra '{"no_host_key_check": "true"}'; \
-			docker exec infra-webserver-1 airflow connections add AIRFLOW_CONN_TUPRESS --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)" "no_host_key_check": true}'; \
-			docker exec infra-webserver-1 airflow connections add tupress --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)", "no_host_key_check": true}'; \
+			docker exec infra-api-server-1 airflow connections add AIRFLOW_CONN_TUPSFTP --conn-type ssh --conn-host sftp.tul-infra.page --conn-login $(TUP_SFTP_ACCOUNT_NAME) --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229 --conn-extra '{"no_host_key_check": "true"}'; \
+			docker exec infra-api-server-1 airflow connections add $(TUP_SFTP_ACCOUNT_NAME) --conn-type ssh --conn-host sftp.tul-infra.page --conn-login tupsftp --conn-password '$(TUPSFTP_PASSWORD)' --conn-port 9229  --conn-extra '{"no_host_key_check": "true"}'; \
+			docker exec infra-api-server-1 airflow connections add AIRFLOW_CONN_TUPRESS --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)" "no_host_key_check": true}'; \
+			docker exec infra-api-server-1 airflow connections add tupress --conn-type ssh --conn-host 173.255.195.105 --conn-login $(TUP_ACCOUNT_NAME) --conn-port 9229 --conn-extra '{"key_file": "$(TUP_SSH_KEY_PATH)", "no_host_key_check": true}'; \
 			docker compose -p infra exec worker mkdir -m 700 .ssh; \
 			docker cp $(WORKER_SSH_KEY_PATH) infra-worker-1:/opt/airflow/.ssh/conan_the_deployer; \
 		fi
 
 add-user:
-	docker exec infra-webserver-1 airflow users create -u test-user -f first -l last -e test@test.com -p password -r Admin
+	docker exec infra-api-server-1 airflow users create -u test-user -f first -l last -e test@test.com -p password -r Admin
 
 setup-manifold-ssh:
 	@echo "Setting up airflow to ssh to a local manifold Vagrant instance on port 2222"
@@ -74,8 +74,8 @@ setup-manifold-ssh:
 tty-worker:
 	docker exec -it infra-worker-1 /bin/bash
 
-tty-webserver:
-	docker exec -it infra-webserver-1 /bin/bash
+tty-api-server:
+	docker exec -it infra-api-server-1 /bin/bash
 
 tty-scheduler:
 	docker exec -it infra-scheduler-1 /bin/bash
@@ -83,8 +83,8 @@ tty-scheduler:
 tty-root-worker:
 	docker exec -u root -it infra-worker-1 /bin/bash
 
-tty-root-webserver:
-	docker exec -u root -it infra-webserver-1 /bin/bash
+tty-root-api-server:
+	docker exec -u root -it infra-api-server-1 /bin/bash
 
 tty-root-scheduler:
 	docker exec -u root -it infra-scheduler-1 /bin/bash

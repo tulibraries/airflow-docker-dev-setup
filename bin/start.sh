@@ -2,4 +2,4 @@
 
 airflow db init
 
-/entrypoint webserver
+/entrypoint api-server
