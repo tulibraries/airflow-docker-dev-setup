@@ -17,6 +17,7 @@ services:
     environment:
         - AIRFLOW__CORE__LOAD_EXAMPLES=False
         - AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS=False
+        - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
         - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
@@ -37,7 +38,7 @@ services:
 
     entrypoint: /usr/bin/start.sh
     healthcheck:
-        test: ["CMD-SHELL", "[ -f /opt/airflow/airflow-webserver.pid ]"]
+        test: ["CMD-SHELL", "python -c \"import socket; s = socket.create_connection(('127.0.0.1', 8080), 2); s.close()\""]
         interval: 10s
         timeout: 20s
         retries: 3
@@ -50,6 +51,7 @@ services:
         - api-server
     environment:
         - AIRFLOW__CORE__LOAD_EXAMPLES=False
+        - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
         - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
@@ -62,7 +64,6 @@ services:
     command: celery flower
     volumes:
         - ./docker-requirements.txt:/app/requirements.txt
-
   scheduler:
     build: .
     restart: always
@@ -85,10 +86,57 @@ services:
         - LOAD_EX=n
     command: scheduler
 
+  dag-processor:
+    build: .
+    restart: always
+    depends_on:
+        - api-server
+    volumes:
+        - ../${DAG_DIR}/${DAG_DIR}:/opt/airflow/dags/${DAG_DIR}
+        - ./data:/opt/airflow/data
+        - ./docker-requirements.txt:/app/requirements.txt
+    env_file:
+        - ../local.env
+    environment:
+        - AIRFLOW__CORE__LOAD_EXAMPLES=False
+        - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+        - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+        - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
+        - AIRFLOW__API__SECRET_KEY=Ud+K7/gXg+IWP5F9HjsqXw==
+        - LOAD_EX=n
+    command: dag-processor
+
+  triggerer:
+    build: .
+    restart: always
+    depends_on:
+        - api-server
+    volumes:
+        - ../${DAG_DIR}/${DAG_DIR}:/opt/airflow/dags/${DAG_DIR}
+        - ./data:/opt/airflow/data
+        - ./docker-requirements.txt:/app/requirements.txt
+    env_file:
+        - ../local.env
+    environment:
+        - AIRFLOW__CORE__LOAD_EXAMPLES=False
+        - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+        - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+        - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+        - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/1
+        - AIRFLOW__API__SECRET_KEY=Ud+K7/gXg+IWP5F9HjsqXw==
+        - LOAD_EX=n
+    command: triggerer
+
   worker:
     build:
       context: .
       dockerfile: ./Dockerfile
+    hostname: worker
     restart: always
     depends_on:
         - scheduler
@@ -100,6 +148,8 @@ services:
     env_file:
         - ../local.env
     environment:
+        - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+        - AIRFLOW__CORE__HOSTNAME_CALLABLE=socket.gethostname
         - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
         - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
