@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-airflow db init
+airflow db migrate
 
 /entrypoint api-server
